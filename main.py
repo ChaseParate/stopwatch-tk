@@ -4,32 +4,29 @@ from time import time
 
 
 def format_time(t):
-    minutes, seconds = divmod(t, 60)
-    hours, minutes = divmod(minutes, 60)
-    return f'{hours:02.0f}:{minutes:02.0f}:{seconds:02.0f}'
+    minutes, seconds = map(int, divmod(t, 60))
+    hours, minutes = map(int, divmod(minutes, 60))
+    return f'{hours:02d}:{minutes:02d}:{seconds:02d}'
 
 
 def stopwatch_update():
-    global stopwatch
-    ongoing_stopwatch_time = stopwatch
-    start_time = time()
-
     def count(start_time):
         global stopwatch
         if running:
-            ongoing_stopwatch_time = time() - start_time
-            lbl_stopwatch['text'] = format_time(ongoing_stopwatch_time + stopwatch)
+            loop_time = time() - start_time
+            lbl_stopwatch['text'] = format_time(loop_time + stopwatch)
             start_time = time()
-            stopwatch += ongoing_stopwatch_time
+            stopwatch += loop_time
             lbl_stopwatch.after(100, count, start_time)
-    count(start_time)
+
+    count(time())
 
 
 def start():
     print('Start')
     btn_start_stop['text'] = 'Stop'
     btn_start_stop['bg'] = 'red'
-    
+
     global running
     running = True
     stopwatch_update()
@@ -53,18 +50,17 @@ def reset():
     lbl_stopwatch['text'] = format_time(stopwatch)
 
 
+running = False
+stopwatch = 0
+
 window = tk.Tk()
 window.resizable(False, False)
 font = tk_font.Font(size=30)
 
-running = False
-stopwatch = 0
-start_time = None
-
 # Stopwatch Label
 lbl_stopwatch = tk.Label(
-    text = format_time(stopwatch),
-    font = font
+    text=format_time(stopwatch),
+    font=font
 )
 lbl_stopwatch.pack()
 
@@ -77,23 +73,23 @@ frm_buttons.pack(
 
 # Start/Stop Button
 btn_start_stop = tk.Button(
-    master = frm_buttons,
-    text = 'Start',
-    width = 10,
-    height = 2,
-    bg = 'lime',
-    command = lambda: start() if btn_start_stop['text'] == 'Start' else stop()
+    master=frm_buttons,
+    text='Start',
+    width=10,
+    height=2,
+    bg='lime',
+    command=lambda: start() if btn_start_stop['text'] == 'Start' else stop()
 )
 btn_start_stop.pack(side=tk.LEFT)
 
 # Reset Button
 btn_reset = tk.Button(
-    master = frm_buttons,
-    text = 'Reset',
-    width = 10,
-    height = 2,
-    bg = 'lightgray',
-    command = reset
+    master=frm_buttons,
+    text='Reset',
+    width=10,
+    height=2,
+    bg='lightgray',
+    command=reset
 )
 btn_reset.pack(side=tk.LEFT)
 
